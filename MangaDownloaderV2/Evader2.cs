@@ -62,9 +62,7 @@ namespace MangaDownloaderV2
                 long solved = long.Parse(JInt.Execute(js).GetCompletionValue().ToObject().ToString());
                 solved += uri.Host.Length;
 
-                param["jschl_answer"] = solved.ToString();
-
-                var method = method;
+                param["jschl_answer"] = solved.ToString() + domain.Length;
 
                 Console.Write("test");
             }

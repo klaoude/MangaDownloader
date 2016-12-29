@@ -18,7 +18,7 @@ namespace MangaDownloaderV2
     {
         ListBox listBox1, listBox2;
         ProgressBar progressBar1;
-        Label label1, label2, label3, label4, label5, label6;
+        Label label1, label2, label3, label4, label5, label6, label7, label8;
         RichTextBox richTextBox1;
         WebBrowser webBrowser1;
 
@@ -30,12 +30,13 @@ namespace MangaDownloaderV2
 
         public FrenchManga(ListBox lb1, ListBox lb2, 
             ProgressBar pb1,
-            Label l1, Label l2, Label l3, Label l4, Label l5, Label l6,
+            Label l1, Label l2, Label l3, Label l4, Label l5, Label l6, Label l7, Label l8,
             RichTextBox rtb,
             WebBrowser wb1)
         {
             m_client = new WebClient();
             m_client = Evader2.CreateEvadedWebClient("http://www.japscan.com");
+            m_client.Encoding = Encoding.UTF8;
 
             m_html = WebUtility.HtmlDecode(m_client.DownloadString("http://www.japscan.com/mangas/"));
 
@@ -50,24 +51,13 @@ namespace MangaDownloaderV2
             label4 = l4;
             label5 = l5;
             label6 = l6;
+            label7 = l7;
+            label8 = l8;
 
             richTextBox1 = rtb;
 
             webBrowser1 = wb1;
         }
-
-        private async Task<string> DownloadPage()
-        {
-            var handler = new ClearanceHandler
-            {
-                MaxRetries = 2 // Optionally specify the number of retries, if clearance fails (default is 3).
-            };
-
-            // Create a HttpClient that uses the handler to bypass CloudFlare's JavaScript challange.
-            var client = new HttpClient(handler);
-            var resutl = await client.GetStringAsync("http://www.japscan.com/mangas/");
-            return resutl;
-        } 
 
         public void setPath(string path)
         {
@@ -161,7 +151,18 @@ namespace MangaDownloaderV2
             }
             catch
             {
-                folderName += Regex.Split(imgLink, "/")[5];
+                try
+                {
+                    string name = Regex.Split(imgLink, "/")[5];
+                    if (name.Contains("Tome"))
+                    {
+                        folderName = "Tome " + Regex.Split(name, "%20")[3];
+                    }
+                }
+                catch
+                {
+                    folderName = Regex.Split(imgLink, "/")[5];
+                }                
             }
 
             Directory.CreateDirectory(m_path + "\\" + getName() + "/" + folderName);
@@ -169,6 +170,7 @@ namespace MangaDownloaderV2
             bool c = true;
             int i = 1;
             int tryy = 0;
+
             while (c)
             {
                 try
@@ -198,8 +200,10 @@ namespace MangaDownloaderV2
 
                     imgLink += extention;
                     string fileName = Regex.Split(imgLink, "/")[6];
+                    
                     m_client.DownloadFile(imgLink, m_path + "\\" + getName() + "/" + folderName + "/" + fileName);
                     progressBar1.PerformStep();
+                    label8.Text = "Status: Downloading " + fileName;
                     i++;
                     tryy = 0;
                 }
@@ -249,17 +253,17 @@ namespace MangaDownloaderV2
             label2.Text += Regex.Split(InfoSplit[1], "<")[0];
             if (InfoSplit.Length > 6)
             {
-                label3.Text += Regex.Split(InfoSplit[3], "<")[0];
-                label4.Text += Regex.Split(InfoSplit[4], "<")[0];
-                label6.Text += Regex.Split(Regex.Split(InfoSplit[5], ">")[1], "<")[0];
-                label5.Text += Regex.Split(InfoSplit[6], "<")[0];
+                //label3.Text += Regex.Split(InfoSplit[3], "<")[0];
+                //label4.Text += Regex.Split(InfoSplit[4], "<")[0];
+                //label6.Text += Regex.Split(Regex.Split(InfoSplit[5], ">")[1], "<")[0];
+                //label5.Text += Regex.Split(InfoSplit[6], "<")[0];
             }
             else
             {
-                label3.Text += Regex.Split(InfoSplit[2], "<")[0];
-                label4.Text += Regex.Split(InfoSplit[3], "<")[0];
-                label6.Text += Regex.Split(Regex.Split(InfoSplit[4], ">")[1], "<")[0];
-                label5.Text += Regex.Split(InfoSplit[5], "<")[0];
+                //label3.Text += Regex.Split(InfoSplit[2], "<")[0];
+                //label4.Text += Regex.Split(InfoSplit[3], "<")[0];
+                //label6.Text += Regex.Split(Regex.Split(InfoSplit[4], ">")[1], "<")[0];
+                //label5.Text += Regex.Split(InfoSplit[5], "<")[0];
             }
 
             richTextBox1.Text = Regex.Split(Regex.Split(m_mangaHtml, "<div id=\"synopsis\">")[1], "</div>")[0];

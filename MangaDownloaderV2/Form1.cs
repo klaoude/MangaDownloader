@@ -23,7 +23,7 @@ namespace MangaDownloaderV2
         {
             InitializeComponent();
 
-            m_fm = new FrenchManga(listBox1, listBox2, progressBar1, label1, label2, label3, label4, label5, label6, richTextBox1, webBrowser1);
+            m_fm = new FrenchManga(listBox1, listBox2, progressBar1, label1, label2, label3, label4, label5, label6, label7, label8, richTextBox1, webBrowser1);
             m_em = new EnglishManga(listBox1, listBox2, progressBar1, label1, label2, label3, label4, label5, label6, richTextBox1);
 
             comboBox1.SelectedIndex = 0;
@@ -113,6 +113,11 @@ namespace MangaDownloaderV2
 
         private void button2_Click(object sender, EventArgs e)
         {
+            if (textBox2.Text == "")
+            {
+                MessageBox.Show("Please enter a path !");
+                return;
+            }
             foreach (string s in listBox2.Items)
             {
                 if (comboBox1.SelectedIndex == 0)
@@ -134,6 +139,11 @@ namespace MangaDownloaderV2
             //    m_fm.loadMangaList();
             //else
             //    m_em.loadMangaList();
+        }
+
+        private void webBrowser1_DocumentCompleted(object sender, WebBrowserDocumentCompletedEventArgs e)
+        {
+
         }
     }
 }
