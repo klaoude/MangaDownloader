@@ -139,7 +139,7 @@ namespace MangaDownloaderV2
 
             Directory.CreateDirectory(m_path + "\\" + getName());
 
-            //string folderName = chap;
+            string folderName = chap;
             //try
             //{
             //    int chapNum = int.Parse(Regex.Split(imgLink, "/")[5]);
