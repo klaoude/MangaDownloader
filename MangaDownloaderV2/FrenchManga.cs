@@ -194,7 +194,7 @@ namespace MangaDownloaderV2
                 {
                     m_client.DownloadFile(toDL, m_path + "\\" + getName() + "/" + folderName + "/" + fileName);
                     progressBar1.PerformStep();
-                    label8.Text = "Status: Downloading " + fileName;
+                    label8.Text = "Status: Downloading " + chap;
                 }                
 
                 link = nexthtml;
