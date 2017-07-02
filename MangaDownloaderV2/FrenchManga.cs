@@ -139,33 +139,33 @@ namespace MangaDownloaderV2
 
             Directory.CreateDirectory(m_path + "\\" + getName());
 
-            string folderName = "Chap ";
-            try
-            {
-                int chapNum = int.Parse(Regex.Split(imgLink, "/")[5]);
-                if (chapNum <= 9)
-                    folderName += "00" + chapNum.ToString();
-                else if (chapNum < 100 && chapNum >= 10)
-                    folderName += "0" + chapNum.ToString();
-                else
-                    folderName += chapNum.ToString();
-            }
-            catch
-            {
-                try
-                {
-                    string name = Regex.Split(imgLink, "/")[5];
-                    if (name.Contains("Tome"))
-                    {
+            //string folderName = chap;
+            //try
+            //{
+            //    int chapNum = int.Parse(Regex.Split(imgLink, "/")[5]);
+            //    if (chapNum <= 9)
+            //        folderName += "00" + chapNum.ToString();
+            //    else if (chapNum < 100 && chapNum >= 10)
+            //        folderName += "0" + chapNum.ToString();
+            //    else
+            //        folderName += chapNum.ToString();
+            //}
+            //catch
+            //{
+            //    try
+            //    {
+            //        string name = Regex.Split(imgLink, "/")[5];
+            //        if (name.Contains("Tome"))
+            //        {
                         
-                        folderName = "Tome " + Regex.Match(name, "Tome%20([0-9]*)").Groups[1].ToString();
-                    }
-                }
-                catch
-                {
-                    folderName = Regex.Split(imgLink, "/")[5];
-                }                
-            }
+            //            folderName = "Tome " + Regex.Match(name, "Tome%20([0-9]*)").Groups[1].ToString();
+            //        }
+            //    }
+            //    catch
+            //    {
+            //        folderName = Regex.Split(imgLink, "/")[5];
+            //    }                
+            //}
 
             Directory.CreateDirectory(m_path + "\\" + getName() + "/" + folderName);
 
