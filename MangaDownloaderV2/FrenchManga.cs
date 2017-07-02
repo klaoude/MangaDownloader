@@ -156,7 +156,8 @@ namespace MangaDownloaderV2
                     string name = Regex.Split(imgLink, "/")[5];
                     if (name.Contains("Tome"))
                     {
-                        folderName = "Tome " + Regex.Split(name, "%20")[3];
+                        
+                        folderName = "Tome " + Regex.Match(name, "Tome%20([0-9]*)").Groups[1].ToString();
                     }
                 }
                 catch
@@ -170,8 +171,36 @@ namespace MangaDownloaderV2
             bool c = true;
             int i = 1;
             int tryy = 0;
+            string link = getImgWrapper(chap);
+            string filenum = Regex.Match(link, "next_link(.*)(.\\/)(.*)(.\\.)(.*)\">").Groups[4].ToString();
+            filenum = filenum.Remove(filenum.Length - 1);
+            
+            while(int.Parse(filenum) <= int.Parse(t))
+            {
+                link = Regex.Match(link, "next_link\" href=\"(.*)\">").Groups[1].ToString();
 
-            while (c)
+                string nexthtml = m_client.DownloadString("http://www.japscan.com" + link);
+
+                string toDL = Regex.Match(nexthtml, "id=\"image\"(.*)src=\"(.*)\"").Groups[2].ToString();
+                string fileName = Regex.Match(nexthtml, "id=\"image\"(.*)src=\"(.*)\\/(.*)\"").Groups[3].ToString();
+
+                filenum = Regex.Match(nexthtml, "next_link(.*)(.\\/)(.*)(.\\.)(.*)\">").Groups[4].ToString();
+                if (filenum.Length <= 0)
+                    break;
+                filenum = filenum.Remove(filenum.Length - 1);
+
+                if (!fileName.Contains("Add"))
+                {
+                    m_client.DownloadFile(toDL, m_path + "\\" + getName() + "/" + folderName + "/" + fileName);
+                    progressBar1.PerformStep();
+                    label8.Text = "Status: Downloading " + fileName;
+                }                
+
+                link = nexthtml;
+            }
+
+
+            /*while (c)
             {
                 try
                 {
@@ -212,10 +241,10 @@ namespace MangaDownloaderV2
                     Console.WriteLine("Exectption : link = " + imgLink);
                     tryy++;
                     i++;
-                    if (tryy >= 10)
+                    if (tryy >= 30)
                         c = false;
                 }
-            }
+            }*/
         }
 
         public string getName()

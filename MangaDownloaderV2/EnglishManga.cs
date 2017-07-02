@@ -55,14 +55,14 @@ namespace MangaDownloaderV2
 
         public void loadMangaList()
         {
-            string dlpatt = "href=\".*>(.*)</a>";
+            string dlpatt = "<li>(.*)<a href=\"(.*)\">(.*)<\\/a>";
             MatchCollection resultDl = Regex.Matches(m_html, dlpatt);
-            for(int i = 0; i < resultDl.Count; i++)
+            for(int i = 46; i < resultDl.Count; i++)
             {
-                if (i >= 48 && i <= resultDl.Count - 10)
+                if (i >= 46 && i <= resultDl.Count - 10)
                 {
-                    if(resultDl[i].Groups[1].ToString().Length > 1)
-                        m_MangaName.Add(resultDl[i].Groups[1].ToString());
+                    if(resultDl[i].Groups[3].ToString().Length > 1)
+                        m_MangaName.Add(resultDl[i].Groups[3].ToString());
                 }
             }
             foreach (string s in m_MangaName)
@@ -78,21 +78,17 @@ namespace MangaDownloaderV2
         {
             listBox2.Items.Clear();
 
-            string patern = "href=\".*>(.*)</a>(.*)</td>";
-            MatchCollection match = Regex.Matches(m_mangaHtml, patern);
+            string temphtml = Regex.Split(m_mangaHtml, "readmangasum")[1];
+
+            string patern = "<div class=\"chico_manga\"><\\/div>\\n<a href=\"(.*)\">(.*)<\\/a>";
+            MatchCollection match = Regex.Matches(temphtml, patern);
 
             foreach(Match m in match)
             {
                 if(m.Groups[1].ToString() != "")
-                    listBox2.Items.Add(m.Groups[1].ToString());
-            }
-            
-            string[] chap = Regex.Split(m_mangaHtml, "\">Scan ");
-            List<string> chaps = new List<string>();
-            for (int i = 0; i < chap.Length; i++)
-            {
-                if (i != 0 && i != chap.Length)
-                    listBox2.Items.Add(Regex.Split(chap[i], "</a>")[0]);
+                {
+                    listBox2.Items.Add(m.Groups[2].ToString());
+                }                    
             }
         }
 

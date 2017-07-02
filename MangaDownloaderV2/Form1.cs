@@ -23,7 +23,7 @@ namespace MangaDownloaderV2
         {
             InitializeComponent();
 
-            m_fm = new FrenchManga(listBox1, listBox2, progressBar1, label1, label2, label3, label4, label5, label6, label7, label8, richTextBox1, webBrowser1);
+            m_fm = new FrenchManga(listBox1, listBox2, progressBar1, label1, label2, label3, label4, label5, label6, label7, label8, richTextBox1, new WebBrowser());
             m_em = new EnglishManga(listBox1, listBox2, progressBar1, label1, label2, label3, label4, label5, label6, richTextBox1);
 
             comboBox1.SelectedIndex = 0;
@@ -101,7 +101,11 @@ namespace MangaDownloaderV2
                 MessageBox.Show("Please enter a path !");
                 return;
             }
-            foreach(string s in listBox2.SelectedItems)
+
+            //for (int i = 0; i < listBox2.Items.Count; i++)
+            //    listBox2.SetSelected(i, !listBox2.GetSelected(i));
+
+            foreach (string s in listBox2.SelectedItems)
             {
                 if (comboBox1.SelectedIndex == 0)
                     m_fm.DownloadChapter(s);
@@ -118,12 +122,13 @@ namespace MangaDownloaderV2
                 MessageBox.Show("Please enter a path !");
                 return;
             }
-            foreach (string s in listBox2.Items)
+
+            for(int i = listBox2.Items.Count - 1; i >= 0; i--)
             {
                 if (comboBox1.SelectedIndex == 0)
-                    m_fm.DownloadChapter(s);
+                    m_fm.DownloadChapter(listBox2.Items[i].ToString());
                 else
-                    m_em.DownloadChapter(s);
+                    m_em.DownloadChapter(listBox2.Items[i].ToString());
             }
                 
             MessageBox.Show("All download are finished !");
@@ -132,13 +137,12 @@ namespace MangaDownloaderV2
         private void comboBox1_SelectedIndexChanged(object sender, EventArgs e)
         {
             textBox1.Text = "";
-            textBox2.Text = "";
             listBox1.Items.Clear();
             listBox2.Items.Clear();
-            //if (comboBox1.SelectedIndex == 0)
-            //    m_fm.loadMangaList();
-            //else
-            //    m_em.loadMangaList();
+            if (comboBox1.SelectedIndex == 0)
+                m_fm.loadMangaList();
+            else
+                m_em.loadMangaList();
         }
 
         private void webBrowser1_DocumentCompleted(object sender, WebBrowserDocumentCompletedEventArgs e)
