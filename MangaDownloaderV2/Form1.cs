@@ -94,7 +94,7 @@ namespace MangaDownloaderV2
                 m_em.setPath(textBox2.Text);
         }
 
-        private void button1_Click(object sender, EventArgs e)
+        private void button1_Click(object sender, EventArgs e) //Download button
         {
             if(textBox2.Text == "")
             {
@@ -115,7 +115,7 @@ namespace MangaDownloaderV2
             MessageBox.Show("All download are finished !");
         }
 
-        private void button2_Click(object sender, EventArgs e)
+        private void button2_Click(object sender, EventArgs e) //Download All button
         {
             if (textBox2.Text == "")
             {
@@ -123,7 +123,7 @@ namespace MangaDownloaderV2
                 return;
             }
 
-            for(int i = listBox2.Items.Count - 1; i >= 0; i--)
+            for(int i = 0; i < listBox2.Items.Count; i++)
             {
                 if (comboBox1.SelectedIndex == 0)
                     m_fm.DownloadChapter(listBox2.Items[i].ToString());

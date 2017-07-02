@@ -94,7 +94,8 @@ namespace MangaDownloaderV2
             listBox2.Items.Clear();
             string[] chap = Regex.Split(m_mangaHtml, "\">Scan ");
             List<string> chaps = new List<string>();
-            for (int i = 0; i < chap.Length; i++)
+
+            for(int i = chap.Length - 1; i > 0; i--)
             {
                 if (i != 0 && i != chap.Length)
                     listBox2.Items.Add(Regex.Split(chap[i], "</a>")[0]);
