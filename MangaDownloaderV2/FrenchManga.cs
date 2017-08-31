@@ -84,10 +84,9 @@ namespace MangaDownloaderV2
         }
 
         
-        public void updateMangaHtml(string name)
-        {
-            m_mangaHtml = WebUtility.HtmlDecode(m_client.DownloadString("http://www.japscan.com/mangas/" + name));
-        }
+        public void updateMangaHtml(string name) 
+            => m_mangaHtml = WebUtility.HtmlDecode(m_client.DownloadString("http://www.japscan.com/mangas/" + name));
+        
 
         public void loadChapitre()
         {
@@ -102,11 +101,9 @@ namespace MangaDownloaderV2
             }
         }
 
-        public string getImgURL(string name)
-        {
-            string[] imgLinks = Regex.Split(getImgWrapper(name), "src=\"http://cdn.japscan.com");
-            return "http://cdn.japscan.com" + Regex.Split(imgLinks[1], "\"/>")[0];
-        }
+        public string getImgURL(string name) 
+            => "http://cdn.japscan.com" + Regex.Split(Regex.Split(getImgWrapper(name), "src=\"http://cdn.japscan.com")[1], "\"/>")[0];
+       
 
         public string getImgWrapper(string name)
         {
@@ -131,47 +128,25 @@ namespace MangaDownloaderV2
 
             progressBar1.Minimum = 0;
             progressBar1.Step = 1;
+
             string[] test = Regex.Split(getImgWrapper(chap), "</option>");
             string t = Regex.Split(test[test.Length - 3], "html")[1];
             t = Regex.Split(t, " ")[1];
+
             progressBar1.Maximum = int.Parse(t);
             progressBar1.Value = 0;
 
             Directory.CreateDirectory(m_path + "\\" + getName());
 
-            string folderName = chap;
-            //try
-            //{
-            //    int chapNum = int.Parse(Regex.Split(imgLink, "/")[5]);
-            //    if (chapNum <= 9)
-            //        folderName += "00" + chapNum.ToString();
-            //    else if (chapNum < 100 && chapNum >= 10)
-            //        folderName += "0" + chapNum.ToString();
-            //    else
-            //        folderName += chapNum.ToString();
-            //}
-            //catch
-            //{
-            //    try
-            //    {
-            //        string name = Regex.Split(imgLink, "/")[5];
-            //        if (name.Contains("Tome"))
-            //        {
-                        
-            //            folderName = "Tome " + Regex.Match(name, "Tome%20([0-9]*)").Groups[1].ToString();
-            //        }
-            //    }
-            //    catch
-            //    {
-            //        folderName = Regex.Split(imgLink, "/")[5];
-            //    }                
-            //}
+            string folderName = chap.Replace(":", "").Replace("\"", "").Replace("?", "");
 
-            Directory.CreateDirectory(m_path + "\\" + getName() + "/" + folderName);
+            string name = getName();
+            string dir = m_path + "/" + name + folderName;
+            Directory.CreateDirectory(dir);
 
-            bool c = true;
-            int i = 1;
-            int tryy = 0;
+            string firstName = Regex.Match(imgLink, "\\/(.*\\/)(.*)").Groups[2].ToString();
+            m_client.DownloadFile(imgLink, m_path + "\\" + getName() + "/" + folderName + "/" + firstName);
+
             string link = getImgWrapper(chap);
             string filenum = Regex.Match(link, "next_link(.*)(.\\/)(.*)(.\\.)(.*)\">").Groups[4].ToString();
             filenum = filenum.Remove(filenum.Length - 1);
@@ -186,15 +161,17 @@ namespace MangaDownloaderV2
                 string fileName = Regex.Match(nexthtml, "id=\"image\"(.*)src=\"(.*)\\/(.*)\"").Groups[3].ToString();
 
                 filenum = Regex.Match(nexthtml, "next_link(.*)(.\\/)(.*)(.\\.)(.*)\">").Groups[4].ToString();
+
                 if (filenum.Length <= 0)
                     break;
+
                 filenum = filenum.Remove(filenum.Length - 1);
 
-                if (!fileName.Contains("Add"))
+                if (!fileName.Contains("Add") && !fileName.Contains("IMG_"))
                 {
                     m_client.DownloadFile(toDL, m_path + "\\" + getName() + "/" + folderName + "/" + fileName);
                     progressBar1.PerformStep();
-                    label8.Text = "Status: Downloading " + chap;
+                    label8.Text = int.Parse(filenum) + "/" + int.Parse(t);
                 }                
 
                 link = nexthtml;
