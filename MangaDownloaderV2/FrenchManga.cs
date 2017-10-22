@@ -101,8 +101,13 @@ namespace MangaDownloaderV2
             }
         }
 
-        public string getImgURL(string name) 
-            => "http://cdn.japscan.com" + Regex.Split(Regex.Split(getImgWrapper(name), "src=\"http://cdn.japscan.com")[1], "\"/>")[0];
+        public string getImgURL(string name)
+        {
+            string wrap = getImgWrapper(name);
+            string reg = Regex.Match(wrap, "src=\"http:\\/\\/cdn.japscan.com\\/(.*)\"").Groups[1].ToString();
+            return "http://cdn.japscan.com/" + reg;
+        }
+            //=> "http://cdn.japscan.com" + Regex.Split(Regex.Split(getImgWrapper(name), "src=\"http://cdn.japscan.com")[1], "\"/>")[0];
        
 
         public string getImgWrapper(string name)
@@ -119,7 +124,7 @@ namespace MangaDownloaderV2
 
             Match resultDl = Regex.Match(m_mangaHtml, dlpatt);
 
-            return m_client.DownloadString("http://" + resultDl.Groups[1]);
+            return m_client.DownloadString("http://" + resultDl.Groups[1].ToString());
         }
 
         public void DownloadChapter(string chap)
@@ -144,8 +149,11 @@ namespace MangaDownloaderV2
             string dir = m_path + "/" + name + folderName;
             Directory.CreateDirectory(dir);
 
-            string firstName = Regex.Match(imgLink, "\\/(.*\\/)(.*)").Groups[2].ToString();
-            m_client.DownloadFile(imgLink, m_path + "\\" + getName() + "/" + folderName + "/" + firstName);
+            string firstName = Regex.Match(imgLink, "\\/(.*)\\/(.*)").Groups[2].ToString();
+
+            string file = m_path + "/" + getName() + folderName + "/" + firstName;
+
+            m_client.DownloadFile(imgLink, file);
 
             string link = getImgWrapper(chap);
             string filenum = Regex.Match(link, "next_link(.*)(.\\/)(.*)(.\\.)(.*)\">").Groups[4].ToString();
@@ -176,53 +184,6 @@ namespace MangaDownloaderV2
 
                 link = nexthtml;
             }
-
-
-            /*while (c)
-            {
-                try
-                {
-                    string extention = imgLink.Substring(imgLink.Length - 4);
-                    imgLink = Regex.Split(imgLink, extention)[0];
-                    imgLink = imgLink.Remove(imgLink.Length - 1);
-
-                    if (i >= 10 && i < 100)
-                        imgLink = imgLink.Remove(imgLink.Length - 1);
-                    else if (i >= 100 && i < 999)
-                    {
-                        imgLink = imgLink.Remove(imgLink.Length - 1);
-                        imgLink = imgLink.Remove(imgLink.Length - 1);
-                    }
-                    else if (i >= 1000)
-                    {
-                        imgLink = imgLink.Remove(imgLink.Length - 1);
-                        imgLink = imgLink.Remove(imgLink.Length - 1);
-                        imgLink = imgLink.Remove(imgLink.Length - 1);
-                    }
-
-                    if (Regex.Split(imgLink, "/").Length < 7)
-                        imgLink += '/';
-
-                    imgLink += i;
-
-                    imgLink += extention;
-                    string fileName = Regex.Split(imgLink, "/")[6];
-                    
-                    m_client.DownloadFile(imgLink, m_path + "\\" + getName() + "/" + folderName + "/" + fileName);
-                    progressBar1.PerformStep();
-                    label8.Text = "Status: Downloading " + fileName;
-                    i++;
-                    tryy = 0;
-                }
-                catch (WebException ex)
-                {
-                    Console.WriteLine("Exectption : link = " + imgLink);
-                    tryy++;
-                    i++;
-                    if (tryy >= 30)
-                        c = false;
-                }
-            }*/
         }
 
         public string getName()
