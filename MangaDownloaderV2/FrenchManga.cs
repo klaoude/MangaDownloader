@@ -105,6 +105,15 @@ namespace MangaDownloaderV2
         {
             string wrap = getImgWrapper(name);
             string reg = Regex.Match(wrap, "src=\"http:\\/\\/cdn.japscan.com\\/(.*)\"").Groups[1].ToString();
+            if(reg == "")
+            {
+                ///TODO : 
+                ///     javascript RE, 
+                ///     img at cdn.japscan.com/cr_images/ + nom_manga + "/" + chap_num + "/" + nom_image
+                ///     img is obfuscated
+                ///     src code is at cdn.japscan.com/js/lecteur_cr.js
+                ///     good Luck
+            }
             return "http://cdn.japscan.com/" + reg;
         }
             //=> "http://cdn.japscan.com" + Regex.Split(Regex.Split(getImgWrapper(name), "src=\"http://cdn.japscan.com")[1], "\"/>")[0];
