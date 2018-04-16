@@ -11,6 +11,7 @@ using System.Windows.Forms;
 using System.Net.Http;
 using Cloudflare_Evader;
 using System.Diagnostics;
+using System.Threading;
 
 namespace MangaDownloaderV2
 {
@@ -35,10 +36,10 @@ namespace MangaDownloaderV2
             WebBrowser wb1)
         {
             m_client = new WebClient();
-            m_client = Evader2.CreateEvadedWebClient("http://www.japscan.com");
+            m_client = Evader2.CreateEvadedWebClient("http://www.japscan.cc");
             m_client.Encoding = Encoding.UTF8;
 
-            m_html = WebUtility.HtmlDecode(m_client.DownloadString("http://www.japscan.com/mangas/"));
+            m_html = WebUtility.HtmlDecode(m_client.DownloadString("http://www.japscan.cc/mangas/"));
 
             listBox1 = lb1;
             listBox2 = lb2;
@@ -85,7 +86,7 @@ namespace MangaDownloaderV2
 
         
         public void updateMangaHtml(string name) 
-            => m_mangaHtml = WebUtility.HtmlDecode(m_client.DownloadString("http://www.japscan.com/mangas/" + name));
+            => m_mangaHtml = WebUtility.HtmlDecode(m_client.DownloadString("http://www.japscan.cc/mangas/" + name));
         
 
         public void loadChapitre()
@@ -101,22 +102,30 @@ namespace MangaDownloaderV2
             }
         }
 
+        //public string getImgURL(string name)
+        //{
+        //    string wrap = getImgWrapper(name);
+        //    string reg = Regex.Match(wrap, "src=\"http:\\/\\/cdn.japscan.cc\\/(.*)\"").Groups[1].ToString();
+        //    if(reg == "")
+        //    {
+        //        ///TODO : 
+        //        ///     javascript RE, 
+        //        ///     img at cdn.japscan.cc/cr_images/ + nom_manga + "/" + chap_num + "/" + nom_image
+        //        ///     img is obfuscated
+        //        ///     src code is at cdn.japscan.cc/js/lecteur_cr.js
+        //        ///     good Luck
+        //    }
+        //    return "http://cdn.japscan.cc/" + reg;
+        //}
         public string getImgURL(string name)
         {
-            string wrap = getImgWrapper(name);
-            string reg = Regex.Match(wrap, "src=\"http:\\/\\/cdn.japscan.com\\/(.*)\"").Groups[1].ToString();
-            if(reg == "")
-            {
-                ///TODO : 
-                ///     javascript RE, 
-                ///     img at cdn.japscan.com/cr_images/ + nom_manga + "/" + chap_num + "/" + nom_image
-                ///     img is obfuscated
-                ///     src code is at cdn.japscan.com/js/lecteur_cr.js
-                ///     good Luck
-            }
-            return "http://cdn.japscan.com/" + reg;
+            string wrapper = getImgWrapper(name);
+            //string[] split1 = Regex.Split(wrapper, "src=\"http://ww1.japscan.cc");
+            //string[] split2 = Regex.Split(split1[1], "\" />");
+            //return "http://ww1.japscan.cc" + split2[0];
+            string ret = Regex.Match(wrapper, "id=\"image\" alt=\"(.*)\" src=\"(.*)\"").Groups[2].ToString();
+            return ret;
         }
-            //=> "http://cdn.japscan.com" + Regex.Split(Regex.Split(getImgWrapper(name), "src=\"http://cdn.japscan.com")[1], "\"/>")[0];
        
 
         public string getImgWrapper(string name)
@@ -143,7 +152,13 @@ namespace MangaDownloaderV2
             progressBar1.Minimum = 0;
             progressBar1.Step = 1;
 
-            string[] test = Regex.Split(getImgWrapper(chap), "</option>");
+            string wrap;
+            do
+            {
+                wrap = getImgWrapper(chap);
+                Thread.Sleep(100);
+            } while (wrap.Contains("too many"));
+            string[] test = Regex.Split(wrap, "</option>");
             string t = Regex.Split(test[test.Length - 3], "html")[1];
             t = Regex.Split(t, " ")[1];
 
@@ -172,7 +187,7 @@ namespace MangaDownloaderV2
             {
                 link = Regex.Match(link, "next_link\" href=\"(.*)\">").Groups[1].ToString();
 
-                string nexthtml = m_client.DownloadString("http://www.japscan.com" + link);
+                string nexthtml = m_client.DownloadString("http://www.japscan.cc" + link);
 
                 string toDL = Regex.Match(nexthtml, "id=\"image\"(.*)src=\"(.*)\"").Groups[2].ToString();
                 string fileName = Regex.Match(nexthtml, "id=\"image\"(.*)src=\"(.*)\\/(.*)\"").Groups[3].ToString();
@@ -214,8 +229,8 @@ namespace MangaDownloaderV2
         }
         public void setName()
         {
-            string[] NameSplit = Regex.Split(m_mangaHtml, "www.japscan.com/lecture-en-ligne/" + getName());
-            NameSplit = Regex.Split(NameSplit[1], "</a>");
+            string[] NameSplit = Regex.Split(m_mangaHtml, "www.japscan.cc/lecture-en-ligne/" + getName());
+           NameSplit = Regex.Split(NameSplit[1], "</a>");
             string nameSpl = NameSplit[0];
             nameSpl = nameSpl.Substring(1);
             nameSpl = nameSpl.Substring(1);
